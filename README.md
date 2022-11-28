@@ -1,3 +1,3 @@
 # modal-async-pubsub-example
 
-A small example of how to make a RESTFUL pubsub-esque app with [Modal](https://modal.com).
+A proof-of-concept, pubsub-esque service that runs on [Modal](https://modal.com).
