@@ -1,5 +1,5 @@
 from enum import Enum, unique
-from typing import Dict, List, Set
+from typing import Dict, List
 
 from pydantic import BaseModel
 
@@ -20,19 +20,7 @@ class SubscriptionName(str, Enum):
 
 
 class ReadSubscriptionsResponse(BaseModel):
-    subscriptions: List[SubscriptionName] = list(SubscriptionName)
-
-
-PUBSUB_MAP = {
-    TopicName.messages: {
-        SubscriptionName.messages_processor,
-        SubscriptionName.messages_counter,
-    }
-}
-
-
-class PubsubResponse(BaseModel):
-    pubsub_map: Dict[TopicName, Set[SubscriptionName]] = PUBSUB_MAP
+    subscriptions: Dict[str, List[SubscriptionName]]
 
 
 class Message(BaseModel):
