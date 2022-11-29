@@ -50,6 +50,7 @@ subscriptions_router = APIRouter(
 
 @topics_router.get("/topics", response_model=ReadTopicsResponse)
 async def get_topics() -> ReadTopicsResponse:
+    """Get topics."""
     return ReadTopicsResponse()
 
 
@@ -57,6 +58,14 @@ async def get_topics() -> ReadTopicsResponse:
 async def get_subscriptions(
     topic_name: Optional[str] = None,
 ) -> ReadSubscriptionsResponse:
+    """Get subscriptions.
+
+    Args:
+        topic_name (Optional[str], optional): The topic name. Defaults to None.
+
+    Returns:
+        ReadSubscriptionsResponse: The response.
+    """
     if topic_name is None:
         return ReadSubscriptionsResponse(subscriptions=PUBSUB_MAP)
     elif topic_name in list(TopicName):
@@ -69,6 +78,15 @@ async def get_subscriptions(
 
 @topics_router.post("/topics", response_model=None)
 async def publish_to_topic(bgt: BackgroundTasks, message: Message = Body(...)) -> None:
+    """publish_to_topic.
+
+    Args:
+        bgt (BackgroundTasks): Background tasks. This is used to run the subscribers.
+        message (Message): Message to publish. This is the body of the request.
+
+    Returns:
+        None.
+    """
     log.info(f"Publishing message: {message.json()}")
     bgt.add_task(run_subscribers, message=message)
     log.info(f"Subscribers invoked for message: {message.json()}")
