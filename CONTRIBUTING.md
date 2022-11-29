@@ -49,7 +49,7 @@ pyenv rehash
 ./scripts/format.sh
 ```
 
-## Tests
+## Linting and Testing
 
 ```sh
 ./scripts/test.sh
