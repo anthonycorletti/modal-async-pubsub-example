@@ -29,9 +29,11 @@ class _APIRoute(APIRoute):
             req = request.__dict__
             response = await original_route_handler(request)
             res = response.__dict__
-            response.background.__dict__["tasks"].append(
-                BackgroundTask(_log_info, req=req, res=res)
-            )
+            bt = BackgroundTask(_log_info, req, res)
+            if response.background is None:
+                response.background = bt
+            else:
+                response.background.__dict__["tasks"].append(bt)
             return response
 
         return custom_route_handler

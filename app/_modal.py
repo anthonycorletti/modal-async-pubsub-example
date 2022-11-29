@@ -8,8 +8,16 @@ stub = modal.Stub()
 
 stub["env"] = modal.Secret(env.dict())
 
+image = modal.Image.debian_slim().pip_install(
+    [
+        "fastapi >=0.70.0",
+        "python-dotenv >=0.21.0",
+        "structlog >=21.2.0",
+    ]
+)
 
-@stub.asgi(secret=stub["env"])
+
+@stub.asgi(image=image, secret=stub["env"])
 def _api() -> FastAPI:
     return api
 
