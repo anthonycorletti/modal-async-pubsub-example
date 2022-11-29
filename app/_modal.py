@@ -1,12 +1,12 @@
 import modal
 from fastapi import FastAPI
 
-from app._env import env
+from app._env import _Env
 from app.main import api
 
 stub = modal.Stub()
 
-stub["env"] = modal.Secret(env.dict())
+stub["env"] = modal.Secret(_Env(_env_file=".env").dict())
 
 image = modal.Image.debian_slim().pip_install(
     [
