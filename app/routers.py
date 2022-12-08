@@ -1,11 +1,18 @@
-from typing import Callable, Dict, Optional
+from typing import Callable, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Body, Request, Response
 from fastapi.routing import APIRoute
 from starlette.background import BackgroundTask
 
 from app import log
-from app._types import Message, ReadSubscriptionsResponse, ReadTopicsResponse, TopicName
+from app._types import (
+    Message,
+    ReadSubscriptionsResponse,
+    ReadTopicsResponse,
+    RequestLoggerMessage,
+    ResponseLoggerMessage,
+    TopicName,
+)
 from app.const import PUBSUB_MAP
 from app.subscriber import run_subscribers
 
@@ -20,16 +27,15 @@ class _APIRoute(APIRoute):
     def get_route_handler(self) -> Callable:
         original_route_handler = super().get_route_handler()
 
-        def _log_info(req: Dict, res: Dict) -> None:
-            log.info({"req": req})
-            log.info({"res": res})
+        def _log(req: RequestLoggerMessage, res: ResponseLoggerMessage) -> None:
+            log.info({"req": req.dict()})
+            log.info({"res": res.dict()})
 
         async def custom_route_handler(request: Request) -> Response:
-            # TODO: make nice pydantic types for req and res
-            req = request.__dict__
+            req = RequestLoggerMessage(**request.__dict__)
             response = await original_route_handler(request)
-            res = response.__dict__
-            bt = BackgroundTask(_log_info, req, res)
+            res = ResponseLoggerMessage(**response.__dict__)
+            bt = BackgroundTask(_log, req, res)
             if response.background is None:
                 response.background = bt
             else:

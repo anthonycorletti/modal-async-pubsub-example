@@ -1,7 +1,8 @@
 from enum import Enum, unique
 from typing import Dict, List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Json, StrictInt
+from starlette.datastructures import Headers, MutableHeaders, QueryParams
 
 
 @unique
@@ -39,3 +40,19 @@ class Message(BaseModel):
 class SubscriberResponse(BaseModel):
     name: SubscriptionName
     message: Message
+
+
+class RequestLoggerMessage(BaseModel):
+    scope: Dict
+    _stream_consumed: bool
+    _is_disconnected: bool
+    _query_params: QueryParams
+    _headers: Headers
+    _cookies: Dict
+
+
+class ResponseLoggerMessage(BaseModel):
+    status_code: StrictInt
+    body: Json
+    raw_headers: List
+    _headers: MutableHeaders
