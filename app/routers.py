@@ -2,7 +2,6 @@ from typing import Callable, Optional
 
 from fastapi import APIRouter, BackgroundTasks, Body, Request, Response
 from fastapi.routing import APIRoute
-from starlette.background import BackgroundTask
 
 from app import log
 from app._types import (
@@ -35,11 +34,7 @@ class _APIRoute(APIRoute):
             req = RequestLoggerMessage(**request.__dict__)
             response = await original_route_handler(request)
             res = ResponseLoggerMessage(**response.__dict__)
-            bt = BackgroundTask(_log, req, res)
-            if response.background is None:
-                response.background = bt
-            else:
-                response.background.__dict__["tasks"].append(bt)
+            _log(req=req, res=res)
             return response
 
         return custom_route_handler
